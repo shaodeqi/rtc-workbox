@@ -1,17 +1,26 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <img height="200" alt="Vue logo" @click="handleClick" :src="imgSrc">
+    <HelloWorld msg="webRTC workbox 测试1"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld: () => import('./components/HelloWorld.vue'),
+  },
+  data() {
+    return {
+      imgSrc: './logo1.png'
+    }
+  },
+  methods: {
+    handleClick() {
+      this.imgSrc = './logo2.jpg';
+    }
   }
 }
 </script>

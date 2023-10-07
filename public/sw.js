@@ -1,45 +1,35 @@
-import { PrecacheController } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { CacheFirst } from 'workbox-strategies';
+console.log(self.__WB_MANIFEST);
+self.addEventListener('message', ({data}) => {
+    console.log('message111', data);
+    // console.log('randomString', randomString)
+    
+})
+// const messageCache = {}
 
-const prefix = 'rtc';
-const precacheName = `${prefix}_precache`;
-const precacheManifest = self.__WB_MANIFEST;
-const pluginFetchWithCredentials = {
-  requestWillFetch: async ({ request }) => {
-    return new Request(request.url, { credentials: 'include' });
-  },
-};
+self.addEventListener('fetch', (event) => {
+    if (!event.request.url.includes('text.json')) {
+        return;
+    } else {
+        event.respondWith(new Promise(() => {
+            self.clients.get(event.clientId).then(client => {
+                client.postMessage({
+                    url: event.request.url,
+                    destination: event.request.destination,
+                    method: event.request.method,
+                });
+            })
+        }))
+    }
+})
 
-const precacheController = new PrecacheController({
-  cacheName: precacheName,
-  plugins: [pluginFetchWithCredentials],
-});
-precacheController.addToCacheList(precacheManifest);
+self.addEventListener('install', () => {
+    console.log('install');
+    console.log(self.clients);
+})
 
-/**
- * Install [Event]
- */
-self.addEventListener('install', (event) => {
-  // Install precacher
-  console.log('install', precacheManifest)
-  event.waitUntil(precacheController.install(event));
-});
-
-// /**
-//  * Activate [Event]
-//  */
 self.addEventListener('activate', (event) => {
-  console.log('active')
+    console.log('activate', self.RTCPeerConnection);
+    event.waitUntil(self.clients.claim())
+})
 
-  // Activate precacher
-  event.waitUntil(precacheController.activate(event));
-});
-
-registerRoute(
-  // Use whatever matching callback you need.
-  ({ url }) => !!precacheController.getCacheKeyForURL(url),
-  new CacheFirst({
-    cacheName: precacheName,
-  }),
-);
+self.skipWaiting();

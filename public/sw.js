@@ -1,10 +1,7 @@
-console.log(self.__WB_MANIFEST);
 self.addEventListener('message', ({data}) => {
-    console.log('message111', data);
-    // console.log('randomString', randomString)
+    console.log('【service worker】message', data);
     
 })
-// const messageCache = {}
 
 self.addEventListener('fetch', (event) => {
     if (!event.request.url.includes('text.json')) {
@@ -24,11 +21,10 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('install', () => {
     console.log('install');
-    console.log(self.clients);
 })
 
 self.addEventListener('activate', (event) => {
-    console.log('activate', self.RTCPeerConnection);
+    console.log('activate', self.__WB_MANIFEST);
     event.waitUntil(self.clients.claim())
 })
 

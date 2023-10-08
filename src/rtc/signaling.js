@@ -14,28 +14,48 @@ const handleMessageData = async (data) => {
   }
   return payload;
 };
-const prefix = 'signaling';
+const dataType = 'signaling';
 
-const tranfer = async (message) => {
+const messageTranfer = async (message) => {
   const { data: originData } = message;
   const payload = await handleMessageData(originData);
-  const { cmd, data = {}, user } = payload;
+  const { cmd, from, data = {} } = payload;
   const { type, content } = data;
 
-  if (cmd !== 'send' || type !== prefix) {
+  if (cmd !== 'send' || type !== dataType) {
     return;
   }
 
-  return { content, from: user };
+  return { content, from };
 };
 
 export class Signaling extends EventTarget {
   constructor(socket) {
     super();
     this.socket = socket;
+    const OPEN = 1;
+    const CLOSED = 3;
 
+    if (socket.readyState === OPEN) {
+      const event = new CustomEvent('open');
+      this.dispatchEvent(event);
+    }
+
+    if (socket.readyState === CLOSED) {
+      const event = new CustomEvent('close');
+      this.dispatchEvent(event);
+    }
+
+    this.socket.addEventListener('open', (detail) => {
+      const event = new CustomEvent('open', detail);
+      this.dispatchEvent(event);
+    })
+    this.socket.addEventListener('close', (detail) => {
+      const event = new CustomEvent('close', detail);
+      this.dispatchEvent(event);
+    })
     this.socket.addEventListener('message', async (message) => {
-      const detail = await tranfer(message);
+      const detail = await messageTranfer(message);
       if (!detail) {
         return;
       }
@@ -51,10 +71,10 @@ export class Signaling extends EventTarget {
       JSON.stringify({
         cmd: 'send',
         data: {
-          type: prefix,
+          type: dataType,
           content,
         },
-        users: peer ? [peer] : [],
+        to: peer ? [peer] : [],
       }),
     );
   }

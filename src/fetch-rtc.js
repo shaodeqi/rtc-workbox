@@ -9,28 +9,41 @@ const signaling = new Signaling(socket);
 let connections;
 
 socket.addEventListener('open', () => {
-    socket.addEventListener('message', (e) => {
-        console.log(111, e);
+    socket.addEventListener('message', ({ data }) => {
+        const {data: onlinePeers, cmd} = JSON.parse(data);
+        if (cmd === 'peers') {
+            const peers = onlinePeers.filter((currentPeer) => currentPeer !== peer);
+
+            const multiRTCPeerConnection = new MultiRTCPeerConnection(peers, signaling);
+            connections = multiRTCPeerConnection.connections;
+
+            const createChannel = (connection, channel) => {
+                if (!channel) {
+                    connection.channel = connection.createDataChannel('resource');
+                } else {
+                    connection.channel = channel;
+                }
+                connection.channel.addEventListener('message', (e) => {
+                    console.log('!passion', e);
+                })
+            }
+
+            connections.forEach((connection) => {
+                createChannel(connection)
+            })
+
+            multiRTCPeerConnection.addEventListener('new', ({detail: connection}) => {
+                connection.addEventListener('datachannel', ({ channel }) => {
+                    createChannel(connection, channel);
+                  })
+            })
+            
+        }
     })
     socket.send(JSON.stringify({
         cmd: 'peers',
     }));
 
-    signaling.addEventListener('message', ({detail}) => {
-        console.log('signaling message', detail);
-    })
-    
-
-    connections = new MultiRTCPeerConnection([String(+!+peer)], signaling).connections;
-    connections.forEach((connection) => {
-        connection.addEventListener('datachannel', (event) => {
-            console.log('远端创建 datachannel', event.channel);
-            connection.channel = event.channel;
-            connection.channel.onmessage = (event) => {
-                console.log('channel message', event);
-            }
-        })
-    })
 })
 
 
@@ -54,13 +67,7 @@ const fetchRTC = (url) => {
 
     return new Promise(() => {
         connections.forEach((connection) => {
-            if (!connection.channel) {
-                connection.ondatachannel = function () {
-                    console.log(123);
-                }
-                connection.channel = connection.createDataChannel('resource');
-                console.log('没有channel, 主动创建')
-            }
+            console.log(connection.channel);
 
             if (connection.channel.readyState === 'open') {
                 connection.channel.send(url)

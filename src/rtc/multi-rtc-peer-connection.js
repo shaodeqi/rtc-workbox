@@ -9,7 +9,6 @@ export class MultiRTCPeerConnection extends EventTarget {
     this.listenSignaling();
 
     peers.forEach(async (peer) => {
-      console.log(`【MultiRPC】准备与${peer}建立连接`);
       await this.join(peer);
     });
   }
@@ -31,7 +30,6 @@ export class MultiRTCPeerConnection extends EventTarget {
 
   listenSignaling() {
     const { signaling, connections, join } = this;
-    let trackEvent;
 
     signaling.addEventListener(
       'message',
@@ -48,6 +46,9 @@ export class MultiRTCPeerConnection extends EventTarget {
         if (!connection) {
           console.log('【MultiRPC】未找到匹配的 connection, 重新创建');
           connection = await join.call(this, from, true);
+          this.dispatchEvent(new CustomEvent('new', {
+            detail: connection,
+          }))
         }
 
         switch (type) {
@@ -62,10 +63,11 @@ export class MultiRTCPeerConnection extends EventTarget {
             } catch (e) {
               console.log('【MultiRPC】收到 offer 后执行异常', e);
             }
-            trackEvent = new CustomEvent('offer', {
-              detail: connection,
-            });
-            this.dispatchEvent(trackEvent);
+            this.dispatchEvent(
+              new CustomEvent('offer', {
+                detail: connection,
+              })
+            );
             break;
 
           case 'answer':
@@ -98,14 +100,11 @@ export class MultiRTCPeerConnection extends EventTarget {
     connection.addEventListener('connectionstatechange', async () => {
       const stateMap = {
         connected: '建立',
-        disconnected: '断开'
+        disconnected: '断开',
+        connecting: '中',
       }
         console.log(`【MultiRPC】与用户${connection.peer}对等连接${stateMap[connection.connectionState] || '未知'}！`);
     });
-    connection.addEventListener('datachannel', ({ channel }) => {
-      console.log('【MultiRPC】datachannel', channel)
-      connection.channel = channel;
-    })
   }
 
   async join(peer, passive = false) {

@@ -1,22 +1,32 @@
+const promiseResolves = {};
+
 self.addEventListener('message', ({data}) => {
-    console.log('【service worker】message', data);
-    
+    const {id, response } = data;
+    promiseResolves?.[id](new Response(response));
 })
 
 self.addEventListener('fetch', (event) => {
-    if (!event.request.url.includes('text.json')) {
-        return;
-    } else {
-        event.respondWith(new Promise(() => {
-            self.clients.get(event.clientId).then(client => {
-                client.postMessage({
-                    url: event.request.url,
-                    destination: event.request.destination,
-                    method: event.request.method,
-                });
+    event.respondWith(
+        Promise.race([
+            new Promise((resolve) => {
+                self.clients.get(event.clientId).then(client => {
+                    client.postMessage({
+                        url: event.request.url,
+                        destination: event.request.destination,
+                        method: event.request.method,
+                    });
+                    promiseResolves[event.request.url] = resolve;
+                })
+            }),
+            new Promise((resolve) => {
+                fetch(event.request.url).then(res => {
+                    setTimeout(() => {
+                        resolve(res);
+                    }, 2000)
+                })
             })
-        }))
-    }
+        ])
+    )
 })
 
 self.addEventListener('install', () => {

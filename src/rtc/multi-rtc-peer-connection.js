@@ -103,7 +103,7 @@ export class MultiRTCPeerConnection extends EventTarget {
         disconnected: '断开',
         connecting: '中',
       }
-        console.log(`【MultiRPC】与用户${connection.peer}对等连接${stateMap[connection.connectionState] || '未知'}！`);
+        console.log(`【MultiRPC】与用户${connection.peer}对等连接${stateMap[connection.connectionState] || connection.connectionState}！`);
     });
   }
 

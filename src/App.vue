@@ -1,18 +1,21 @@
 <template>
   <div id="app">
     <img height="200" alt="Vue logo" @click="handleClick" :src="imgSrc">
-    <button @click="handleGetText">{{ text  }}</button>
-    <HelloWorld msg="webRTC workbox 测试1"/>
+    <div>
+      <button @click="handleGetText">拉取文本</button>
+      {{ text }}
+      <button @click="handleClick">拉取图片</button>
+    </div>
   </div>
 </template>
 
 <script>
 
+let textTimer = null;
+let imgTimer = null;
+
 export default {
   name: 'App',
-  components: {
-    HelloWorld: () => import('./components/HelloWorld.vue'),
-  },
   data() {
     return {
       imgSrc: './logo1.png',
@@ -21,10 +24,20 @@ export default {
   },
   methods: {
     handleClick() {
+      clearTimeout(imgTimer)
       this.imgSrc = './logo2.jpg';
+      imgTimer = setTimeout(() => {
+          this.imgSrc = './logo1.png'
+      }, 3000)
     },
     handleGetText() {
-      fetch('./text.json').then(res => res.json()).then(({text}) => {this.text = text})
+      clearTimeout(textTimer)
+
+      fetch('./text.js').then(res => res.json()).then(({text}) => {this.text = text}).finally(() => {
+        textTimer = setTimeout(() => {
+          this.text = '拉取'
+        }, 3000)
+      })
     }
   }
 }

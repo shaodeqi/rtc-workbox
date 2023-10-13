@@ -6,10 +6,13 @@ export const register = () => {
         window.addEventListener('load', () => {
             navigator.serviceWorker.addEventListener('message', ({data}) => {
                 console.log('【serviceWorker】main message', data);
-                if (data.url.includes('text.json')) {
-                    fetchRTC(data.url);
-                    // navigator.serviceWorker.controller.postMessage('测试4');
-                }
+                fetchRTC(data.url).then(res => {
+                    console.log('fetchRTC 结果', res);
+                    navigator.serviceWorker.controller.postMessage({
+                        id: data.url,
+                        response: res,
+                    });
+                });
             })
             navigator.serviceWorker
             .register('/sw.js')

@@ -18,24 +18,52 @@ socket.addEventListener('open', () => {
             connections = multiRTCPeerConnection.connections;
 
             const createChannel = (connection, channel) => {
+                console.log('创建channel');
                 if (!channel) {
-                    connection.channel = connection.createDataChannel('resource');
+                    connection.channel = connection.createDataChannel('resource', {
+                        maxPacketLifeTime: 3000
+                    });
                 } else {
                     connection.channel = channel;
                 }
-                connection.channel.addEventListener('message', (e) => {
-                    console.log('!passion', e);
+                window.$channel = connection.channel;
+
+                connection.channel.addEventListener('message', async ({data: url}) => {
+                    console.log(typeof url);
+                    if (typeof url === 'string') {
+                        let response = await caches.match(url, { ignoreSearch: true });
+                        console.log('拿到response', response);
+                        if(response) {
+                            response.arrayBuffer().then(arrayBuffer => {
+                                connection.channel.send(arrayBuffer);
+                                console.log(arrayBuffer);
+                            }).catch(e => {
+                                console.warn('转换 arrayBuffer失败', e)
+                            })
+                        }
+                    }
+                })
+
+                connection.channel.addEventListener('close', (e) => {
+                    console.log('datachannel关闭', e);
+                    createChannel(connection);
+                })
+                connection.channel.addEventListener('error', (e) => {
+                    console.log('datachannel异常', e);
                 })
             }
 
             connections.forEach((connection) => {
-                createChannel(connection)
+                createChannel(connection);
+                connection.addEventListener('datachannel', ({ channel }) => {
+                    createChannel(connection, channel);
+                })
             })
 
             multiRTCPeerConnection.addEventListener('new', ({detail: connection}) => {
                 connection.addEventListener('datachannel', ({ channel }) => {
                     createChannel(connection, channel);
-                  })
+                })
             })
             
         }
@@ -64,10 +92,13 @@ export const randomString = (min = 43, max = min) => {
   };
 
 const fetchRTC = (url) => {
-
-    return new Promise(() => {
+    return new Promise((resolve) => {
         connections.forEach((connection) => {
             console.log(connection.channel);
+            if (!connection.channel) {
+                console.warn('没有 channel');
+                return;
+            }
 
             if (connection.channel.readyState === 'open') {
                 connection.channel.send(url)
@@ -76,10 +107,11 @@ const fetchRTC = (url) => {
                     connection.channel.send(url)
                 }
             }
-            // connection.channel.addEventListener('message', (event) => {
-            //     console.log(event.data);
-            //     resolve(event.data);
-            // })
+            connection.channel.addEventListener('message', ({ data }) => {
+                if (data instanceof ArrayBuffer) {
+                    resolve(data);
+                }
+            })
             // connection.channel.onmessage = (event) => {
             //     console.log('channel message', event);
             // }
@@ -88,5 +120,5 @@ const fetchRTC = (url) => {
         })
     
     });
-}
+};
 export default fetchRTC;

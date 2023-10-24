@@ -49,7 +49,7 @@ export class MultiRTCPeerConnection extends EventTarget {
 
         if (!connection) {
           console.log('【MultiRPC】未找到匹配的 connection, 重新创建');
-          connection = await join.call(this, from);
+          connection = await join.call(this, from, true);
 
           this.dispatchEvent(
             new CustomEvent('new', {
@@ -121,13 +121,12 @@ export class MultiRTCPeerConnection extends EventTarget {
     });
   }
 
-  async join(peer) {
+  async join(peer, passive) {
     const { connections } = this;
     const connection = new RTCPeerConnection({
       iceServers: [
         {
           urls: [
-            // 'stunserver.org',
             'stun:stun.l.google.com:19302',
             'stun:stun1.l.google.com:19302',
             'stun:stun2.l.google.com:19302',
@@ -139,6 +138,9 @@ export class MultiRTCPeerConnection extends EventTarget {
     this.listenConnection(connection);
 
     connection.peer = peer;
+    if (!passive) {
+      this.sendOffer(connection);
+    }
 
     connections.push(connection);
     return connection;

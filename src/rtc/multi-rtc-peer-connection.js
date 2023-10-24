@@ -107,7 +107,7 @@ export class MultiRTCPeerConnection extends EventTarget {
       console.log('【MultiRPC】negotiationneeded');
       this.sendOffer(connection);
     });
-    connection.addEventListener('connectionstatechange', async () => {
+    connection.addEventListener('connectionstatechange', async (e) => {
       const stateMap = {
         connected: '建立',
         disconnected: '断开',
@@ -116,7 +116,8 @@ export class MultiRTCPeerConnection extends EventTarget {
       console.log(
         `【MultiRPC】与用户${connection.peer}对等连接${
           stateMap[connection.connectionState] || connection.connectionState
-        }！`
+        }！`,
+        e
       );
     });
   }

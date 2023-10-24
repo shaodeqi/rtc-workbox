@@ -87,9 +87,7 @@ export class MultiRTCPeerConnection extends EventTarget {
 
           case 'candidate':
             console.log('【MultiRPC】收到 candidate', data);
-            if (connection.connectionState !== 'connecting') {
-              connection.addIceCandidate(data);
-            }
+            connection.addIceCandidate(data);
             break;
         }
       }

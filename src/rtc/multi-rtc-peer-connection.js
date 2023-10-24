@@ -17,15 +17,19 @@ export class MultiRTCPeerConnection extends EventTarget {
     const { signaling } = this;
 
     const offer = await connection.createOffer();
-    connection.setLocalDescription(offer);
-    signaling.send(
-      {
-        type: 'offer',
-        data: offer,
-      },
-      connection.peer,
-    );
-    console.log('【MultiRPC】发送offer', offer);
+    try {
+      connection.setLocalDescription(offer);
+      signaling.send(
+        {
+          type: 'offer',
+          data: offer,
+        },
+        connection.peer
+      );
+      console.log('【MultiRPC】发送offer', offer);
+    } catch (error) {
+      console.log('【MultiRPC】发送offer失败', error);
+    }
   }
 
   listenSignaling() {
@@ -45,17 +49,21 @@ export class MultiRTCPeerConnection extends EventTarget {
 
         if (!connection) {
           console.log('【MultiRPC】未找到匹配的 connection, 重新创建');
-          connection = await join.call(this, from, true);
-          this.dispatchEvent(new CustomEvent('new', {
-            detail: connection,
-          }))
+          connection = await join.call(this, from);
+
+          this.dispatchEvent(
+            new CustomEvent('new', {
+              detail: connection,
+            })
+          );
         }
 
         switch (type) {
           case 'offer':
             console.log('【MultiRPC】收到offer', data);
             try {
-              connection.setRemoteDescription(data);
+              await connection.setRemoteDescription(data);
+
               const answer = await connection.createAnswer();
               signaling.send({ type: 'answer', data: answer }, from);
               console.log('【MultiRPC】发送answer', answer);
@@ -63,16 +71,18 @@ export class MultiRTCPeerConnection extends EventTarget {
             } catch (e) {
               console.log('【MultiRPC】收到 offer 后执行异常', e);
             }
-            this.dispatchEvent(
-              new CustomEvent('offer', {
-                detail: connection,
-              })
-            );
             break;
 
           case 'answer':
             console.log('【MultiRPC】收到 answer', data);
-            connection.setRemoteDescription(data);
+            try {
+              connection.setRemoteDescription(data);
+              connection.addEventListener('datachannel', () => {
+                console.warn('对方建立datachannel', connection);
+              });
+            } catch (error) {
+              console.log('【MultiRPC】setRemoteDescription 失败', error);
+            }
             break;
 
           case 'candidate':
@@ -80,7 +90,7 @@ export class MultiRTCPeerConnection extends EventTarget {
             connection.addIceCandidate(data);
             break;
         }
-      },
+      }
     );
   }
 
@@ -102,17 +112,22 @@ export class MultiRTCPeerConnection extends EventTarget {
         connected: '建立',
         disconnected: '断开',
         connecting: '中',
-      }
-        console.log(`【MultiRPC】与用户${connection.peer}对等连接${stateMap[connection.connectionState] || connection.connectionState}！`);
+      };
+      console.log(
+        `【MultiRPC】与用户${connection.peer}对等连接${
+          stateMap[connection.connectionState] || connection.connectionState
+        }！`
+      );
     });
   }
 
-  async join(peer, passive = false) {
-    const {connections } = this;
+  async join(peer) {
+    const { connections } = this;
     const connection = new RTCPeerConnection({
       iceServers: [
         {
           urls: [
+            // 'stunserver.org',
             'stun:stun.l.google.com:19302',
             'stun:stun1.l.google.com:19302',
             'stun:stun2.l.google.com:19302',
@@ -123,15 +138,9 @@ export class MultiRTCPeerConnection extends EventTarget {
     console.log('【MultiRPC】创建 RTCPeerConnection', peer);
     this.listenConnection(connection);
 
-
     connection.peer = peer;
-
-    if (!passive) {
-      this.sendOffer(connection);
-    }
 
     connections.push(connection);
     return connection;
   }
 }
-  

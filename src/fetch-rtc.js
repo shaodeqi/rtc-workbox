@@ -6,7 +6,7 @@ const generateID = (len = 16) =>
   Array.from(new Array(len), () => Math.floor(Math.random() * 256)).join();
 
 const peer = new URLSearchParams(location.search).get('peer');
-const socketURL = `ws://service-h4z7zdeo-1258344701.gz.apigw.tencentcs.com?room=ola&peer=${peer}`;
+const socketURL = `wss://service-h4z7zdeo-1258344701.gz.apigw.tencentcs.com?room=ola&peer=${peer}`;
 
 const socket = new WebSocket(socketURL);
 const signaling = new Signaling(socket);

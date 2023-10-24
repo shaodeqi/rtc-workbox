@@ -49,7 +49,7 @@ export class MultiRTCPeerConnection extends EventTarget {
 
         if (!connection) {
           console.log('【MultiRPC】未找到匹配的 connection, 重新创建');
-          connection = await join.call(this, from, true);
+          connection = await join.call(this, from);
 
           this.dispatchEvent(
             new CustomEvent('new', {
@@ -107,7 +107,7 @@ export class MultiRTCPeerConnection extends EventTarget {
       console.log('【MultiRPC】negotiationneeded');
       this.sendOffer(connection);
     });
-    connection.addEventListener('connectionstatechange', async (e) => {
+    connection.addEventListener('connectionstatechange', async () => {
       const stateMap = {
         connected: '建立',
         disconnected: '断开',
@@ -116,13 +116,12 @@ export class MultiRTCPeerConnection extends EventTarget {
       console.log(
         `【MultiRPC】与用户${connection.peer}对等连接${
           stateMap[connection.connectionState] || connection.connectionState
-        }！`,
-        e
+        }！`
       );
     });
   }
 
-  async join(peer, passive) {
+  async join(peer) {
     const { connections } = this;
     const connection = new RTCPeerConnection({
       iceServers: [
@@ -139,9 +138,6 @@ export class MultiRTCPeerConnection extends EventTarget {
     this.listenConnection(connection);
 
     connection.peer = peer;
-    if (!passive) {
-      this.sendOffer(connection);
-    }
 
     connections.push(connection);
     return connection;

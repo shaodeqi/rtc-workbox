@@ -100,12 +100,16 @@ export default class MultiRTCPeerConnection extends EventTarget {
       if (candidate === null) {
         return;
       }
+
       signaling.send({ type: 'candidate', data: candidate }, connection.peer);
+      logger.info('发送 candidate', candidate);
     });
+
     connection.addEventListener('negotiationneeded', async () => {
       logger.info('negotiationneeded');
       this.sendOffer(connection);
     });
+
     connection.addEventListener('connectionstatechange', async () => {
       logger.info(
         `与用户${connection.peer}连接状态：${connection.connectionState}`

@@ -4,6 +4,7 @@ import { generateID } from '@/utils/transfer';
 import { precacheName } from '@/utils/constant';
 
 const precacheManifest = self.__WB_MANIFEST;
+console.log(precacheManifest);
 const pluginFetchWithCredentials = {
   requestWillFetch: async ({ request }) => {
     return new Request(request.url, { credentials: 'include' });

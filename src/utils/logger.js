@@ -13,7 +13,11 @@ export default class Logger {
   }
 
   log(level, args) {
-    if (process.env.NODE_ENV === 'production') return;
+    if (
+      process.env.NODE_ENV === 'production' &&
+      new URLSearchParams(location.search).get('debug') === null
+    )
+      return;
     console[methods[level]](`%c${this.namespace}`, styles[level], ...args);
   }
 

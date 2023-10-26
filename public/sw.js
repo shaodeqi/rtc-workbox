@@ -16,12 +16,11 @@ const precacheController = new PrecacheController({
   plugins: [pluginFetchWithCredentials],
 });
 
-// precacheController.addToCacheList(precacheManifest);
+precacheController.addToCacheList(precacheManifest.filter(({url}) => /js\/\d/.test(url)));
 caches.open('rtc-precache').then((cache) => {
   if (cache) {
     cache.add('/text.js');
     cache.add('/img.png');
-    cache.add('/js/src_components_HelloWorld_vue.js');
   }
 });
 

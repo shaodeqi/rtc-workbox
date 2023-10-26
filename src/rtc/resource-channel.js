@@ -44,7 +44,7 @@ class RTCResourceChannel {
           );
           this.multiRTCPeerConnection.connections.forEach((connection) => {
             this.listenChannel(connection);
-            this.mountChannel(connection);
+            // this.mountChannel(connection);
           });
         }
       });

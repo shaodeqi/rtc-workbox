@@ -97,7 +97,7 @@ export default class MultiRTCPeerConnection extends EventTarget {
     const { signaling } = this;
 
     connection.addEventListener('icecandidate', ({ candidate }) => {
-      if (!candidate) {
+      if (candidate === null) {
         return;
       }
       signaling.send({ type: 'candidate', data: candidate }, connection.peer);

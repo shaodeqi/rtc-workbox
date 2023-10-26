@@ -34,6 +34,7 @@ class RTCResourceChannel {
             peers,
             this.signaling
           );
+          window.$multiRTCPeerConnection = this.multiRTCPeerConnection;
 
           this.multiRTCPeerConnection.addEventListener(
             'new',
@@ -88,6 +89,7 @@ class RTCResourceChannel {
       this.retryAttempts++;
       this.mountChannel(connection);
     });
+
     connection.channel.addEventListener(
       'message',
       async ({ data: message }) => {

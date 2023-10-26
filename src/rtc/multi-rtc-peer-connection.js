@@ -2,11 +2,23 @@ import Logger from '../utils/logger';
 const logger = new Logger('【MRPC】');
 
 export default class MultiRTCPeerConnection extends EventTarget {
-  constructor(peers, signaling) {
+  static defaultOptions = {
+    iceServers: [
+      {
+        urls: [
+          // 'stun:stun.l.google.com:19302',
+          // 'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ],
+  };
+  constructor(peers, signaling, options) {
     super();
     this.peers = peers;
     this.connections = [];
     this.signaling = signaling;
+    this.options = { ...MultiRTCPeerConnection.defaultOptions, ...options };
 
     this.listenSignaling();
 
@@ -119,17 +131,7 @@ export default class MultiRTCPeerConnection extends EventTarget {
 
   async join(peer) {
     const { connections } = this;
-    const connection = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: [
-            'stun:stun.l.google.com:19302',
-            'stun:stun1.l.google.com:19302',
-            'stun:stun2.l.google.com:19302',
-          ],
-        },
-      ],
-    });
+    const connection = new RTCPeerConnection(this.options);
     logger.info('创建 RTCPeerConnection', peer);
     this.listenConnection(connection);
 

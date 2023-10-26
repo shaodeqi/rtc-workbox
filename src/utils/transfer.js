@@ -1,19 +1,7 @@
+import { idSizeInBytes, headersSizeInBytes } from './constant';
+
 export const generateID = (len = 16) =>
   Array.from(new Array(len), () => Math.floor(Math.random() * 256)).join();
-
-export const precacheName = 'rtc_precache';
-
-export const idBytes = 16;
-export const headersLengthBytes = 4;
-
-// response.headers 转换为 json
-export const headers2Json = (response) => {
-  const json = {};
-  response.headers.forEach((value, key) => {
-    json[key] = value;
-  });
-  return json;
-};
 
 // json 转 typedArray
 export const encodeJson = (json) => {
@@ -29,6 +17,15 @@ export const decodeJson = (typedArray) => {
     return JSON.parse(new TextDecoder().decode(typedArray));
     // eslint-disable-next-line no-empty
   } catch {}
+};
+
+// response.headers 转换为 json
+export const headersToJson = (response) => {
+  const json = {};
+  response.headers.forEach((value, key) => {
+    json[key] = value;
+  });
+  return json;
 };
 
 // 将数字转换为 Uint8Array，字节数量作为一个参数
@@ -61,10 +58,10 @@ export const wrap = async (response, id) => {
   const bodyArrayBuffer = await response.arrayBuffer();
 
   const idUint8Array = new Uint8Array(id.split(','));
-  const headersUint8Array = encodeJson(headers2Json(response));
+  const headersUint8Array = encodeJson(headersToJson(response));
 
   // headers 过长
-  if (headersUint8Array.byteLength > Math.pow(2, headersLengthBytes * 8)) {
+  if (headersUint8Array.byteLength > 2 ** (headersSizeInBytes * 8)) {
     return;
   }
 
@@ -75,43 +72,41 @@ export const wrap = async (response, id) => {
   const bodyUintArray = new Uint8Array(bodyArrayBuffer);
 
   const combineUint8Array = new Uint8Array(
-    idBytes +
-      headersLengthBytes +
+    idSizeInBytes +
+      headersSizeInBytes +
       headersUint8Array.byteLength +
       bodyArrayBuffer.byteLength
   );
 
   combineUint8Array.set(idUint8Array);
-  combineUint8Array.set(headersLengthUint8Array, idBytes);
-  combineUint8Array.set(headersUint8Array, idBytes + headersLengthBytes);
+  combineUint8Array.set(headersLengthUint8Array, idSizeInBytes);
+  combineUint8Array.set(headersUint8Array, idSizeInBytes + headersSizeInBytes);
   combineUint8Array.set(
     bodyUintArray,
-    idBytes + headersLengthBytes + headersUint8Array.byteLength
+    idSizeInBytes + headersSizeInBytes + headersUint8Array.byteLength
   );
-  return combineUint8Array;
+  return combineUint8Array.buffer;
 };
 
 export const unwrap = async (buffer) => {
   const combineUint8Array = new Uint8Array(buffer);
 
-  const id = combineUint8Array.slice(0, idBytes).toString();
+  const id = combineUint8Array.slice(0, idSizeInBytes).toString();
   const headersLength = uint8ArrayToNumber(
-    combineUint8Array.slice(idBytes, idBytes + headersLengthBytes)
+    combineUint8Array.slice(idSizeInBytes, idSizeInBytes + headersSizeInBytes)
   );
   const headers = decodeJson(
     combineUint8Array.slice(
-      idBytes + headersLengthBytes,
-      idBytes + headersLengthBytes + headersLength
+      idSizeInBytes + headersSizeInBytes,
+      idSizeInBytes + headersSizeInBytes + headersLength
     )
   );
-  console.log(headers);
-  const response = combineUint8Array.slice(
-    idBytes + headersLengthBytes + headersLength
+  const body = combineUint8Array.slice(
+    idSizeInBytes + headersSizeInBytes + headersLength
   );
-  console.log(response, '123')
   return {
     id,
     headers,
-    response,
+    body,
   };
 };

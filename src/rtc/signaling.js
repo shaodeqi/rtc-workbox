@@ -29,7 +29,7 @@ const messageTranfer = async (message) => {
   return { content, from };
 };
 
-export class Signaling extends EventTarget {
+export default class Signaling extends EventTarget {
   constructor(socket) {
     super();
     this.socket = socket;

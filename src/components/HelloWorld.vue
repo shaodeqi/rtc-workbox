@@ -1,33 +1,80 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+<div>
+  <h1>Hello World</h1>
+  <div class="fireworks">
+    <div class="firework">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework" style="margin-top: -70px">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework" style="margin-top: 70px">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework" style="margin-top: -70px">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
+    <div class="firework">
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark red"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+      <div class="explosion"><div class="spark blue"></div></div>
+      <div class="explosion"><div class="spark green"></div></div>
+      <div class="explosion"><div class="spark yellow"></div></div>
+    </div>
   </div>
+</div>
+
 </template>
 
 <script>
@@ -35,24 +82,156 @@ export default {
   name: 'HelloWorld',
   props: {
     msg: String
-  }
+  },
+  mounted() {}
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+body {
+  background-color: black;
+	overflow: hidden;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+h1 {
+    text-align: center;
+    position: relative;
+    top:  100px;
+    font-family: sans-serif;
+    font-size: 48px;
+    margin: 0;
+	letter-spacing: 9.5px;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.fireworks {
+	height: 200px;
+	width: 100vw;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+  
 }
-a {
-  color: #42b983;
+.fireworks .firework {
+  position: relative;
+  top: 0px;
+  left: 0px;
+	margin: 0px 50px;
+}
+.fireworks .firework:before{
+  content: "";
+	display: block;
+	border-radius: 5px;
+  background-color: skyblue;
+  width: 5px;
+  height: 0px;
+	will-change: transform;
+	transform: translateY(1000px);
+	animation: fireworkstart 3s ease-out infinite;
+	
+}
+.fireworks .firework .explosion {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 20px;
+  opacity: 0;
+  transform-origin: top center;
+	will-change: transform;
+  animation: explosion 0.7s linear 3s infinite;
+}
+.fireworks .firework .explosion:nth-child(1) {
+          transform: rotate(0deg);
+}
+.fireworks .firework .explosion:nth-child(2) {
+          transform: rotate(90deg);
+}
+.fireworks .firework .explosion:nth-child(3) {
+          transform: rotate(180deg);
+}
+.fireworks .firework .explosion:nth-child(4) {
+          transform: rotate(-90deg);
+}
+.fireworks .firework .explosion:nth-child(5) {
+          transform: rotate(45deg);
+}
+.fireworks .firework .explosion:nth-child(6) {
+          transform: rotate(-45deg);
+}
+.fireworks .firework .explosion:nth-child(7) {
+          transform: rotate(135deg);
+}
+.fireworks .firework .explosion:nth-child(8) {
+          transform: rotate(225deg);
+}
+
+.fireworks .firework .explosion .spark{
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	will-change: transform;
+	animation: explosion2 0.7s ease-in-out 3s infinite;
+}
+
+
+.fireworks .firework .explosion .spark.red {
+  background-color: #E91E63;
+}
+.fireworks .firework .explosion .spark.blue {
+  background-color: skyblue;
+}
+.fireworks .firework .explosion .spark.green {
+  background-color: limegreen;
+}
+.fireworks .firework .explosion .spark.yellow {
+  background-color: yellow;
+}
+.fireworks .firework .explosion .spark.purple {
+  background-color: purple;
+}
+@keyframes fireworkstart{
+	0%{
+		height: 0px;
+		transform: translateY(1000px);
+	}
+	50%{
+		height: 50px;
+	}
+	75%{
+		height: 30px;
+	}
+	100%{
+		height: 0;
+		transform: translateY(0);
+	}
+}
+	
+@keyframes explosion{
+	0%{
+		height: 0px;
+		opacity: 0;
+	}
+	50%{
+		height: 25px;
+		opacity: 1;
+	}
+	100%{
+		height: 0px;
+		opacity: 0;
+	}
+}
+@keyframes explosion2{
+	0%{
+		transform: translateY(0px);
+	}
+	50%{
+		transform: translateY(5px);
+	}
+	75%{
+		transform: translateY(50px);
+	}
+	100%{
+		transform: translateY(70px);
+	}
 }
 </style>

@@ -1,24 +1,13 @@
-import fetchRTC from './fetch-rtc';
+import RTCResourceChannel from './rtc/resource-channel';
+
+const peer = new URLSearchParams(location.search).get('peer');
+const channel = new RTCResourceChannel(peer, 'ola');
 
 export const register = () => {
   if ('serviceWorker' in navigator) {
     // serviceWorker 注册
     window.addEventListener('load', () => {
-      navigator.serviceWorker.addEventListener('message', ({ data }) => {
-        console.log('【fetchRTC】发起', data);
-        const { url, id } = data;
-
-        console.log('id', id);
-
-        fetchRTC(url, id).then(({ headers, response }) => {
-          console.log('【fetchRTC】响应', headers, response);
-          navigator.serviceWorker.controller.postMessage({
-            id,
-            headers,
-            response,
-          });
-        });
-      });
+      channel.listen(navigator.serviceWorker);
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
